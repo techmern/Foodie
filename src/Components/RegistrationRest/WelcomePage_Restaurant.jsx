@@ -55,6 +55,9 @@ const WelcomePage = () => {
         <div>
 
             <nav className={test.navbarStyle}>
+                <div className={test.logo}>
+                    <img src="./Driveria.png" alt="Logo" className={test.logoIcon} />
+                </div>
                 <ul className={test.navListStyle}>
                     <li className={test.navItemStyle}><a href="" className={test.navLinkStyle}>Home</a></li>
                     <li className={test.navItemStyle}><a href="" className={test.navLinkStyle}>About</a></li>
@@ -68,11 +71,11 @@ const WelcomePage = () => {
                         </div>
                     </li>
                     <li className={test.navItemStyle}><a href="" className={test.navLinkStyle}>Contact</a></li>
-                  
+
                 </ul>
 
                 <div className={test.dropdownprofile} onClick={toggleDropdown}>
-                    <img src={'./profile.png'} className={test.profileIcon}/>
+                    <img src={'./profile.png'} className={test.profileIcon} />
                     {showDropdown && (
                         <div className={test.dropdowncontentprofile}>
                             <a href="" onClick={handleProfile} title="View/Edit Profile">Profile</a>
