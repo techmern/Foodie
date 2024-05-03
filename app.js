@@ -8,6 +8,8 @@ const db = require('./db')
 
 // Define all Router
 const createRestaurantRouter = require('./routes/create_restaurant')
+const forgotRestauranttRoutes = require('./routes/forgot_otp_restaurant')
+const tableRestaurantRoutes = require('./routes/create_restaurant_table')
 
 const app = express()
 app.use(bodyParser.json())
@@ -17,6 +19,9 @@ const port = process.env.PORT
 
 // Define Routes
 app.use('/restaurant', createRestaurantRouter)
+app.use('/forgototprestaurant', forgotRestauranttRoutes)
+app.use('/restauranttable', tableRestaurantRoutes)
+
 
 
 // view image from uploads folder

@@ -31,6 +31,9 @@ const restaurantSchema = new mongoose.Schema({
         enum:['Open','Close','Temporary Close'], 
         default:'Open' 
     },
+    restaurantImg: {
+        type:String,
+    },
     createdAt:{
         type: Date,
         default: Date.now,
