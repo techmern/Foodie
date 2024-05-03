@@ -12,8 +12,8 @@ import NewPasswordOTPRestaurant from './Components/ForgotPasswordRestaurant/NewP
 import Restaurant_Add_table from './Components/Table_Restaurant/Restaurant_Add_table';
 import Restaurant_View_table from './Components/Table_Restaurant/Restaurant_View_table';
 import Restaurant_Edit_table from './Components/Table_Restaurant/Restaurant_Edit_table';
-
-import Login_User from './Components/RegistrationUser/Login_User';
+import Restaurant_Add_Food_Item from './Components/Food_Item_Restaurant/Restaurant_Add_Food_Item';
+import Restaurant_View_Food_Item from './Components/Food_Item_Restaurant/Restaurant_View_Food_Item';
 
 
 function App() {
@@ -31,11 +31,11 @@ function App() {
           <Route exact path='/addtableRestaurant' element={<Restaurant_Add_table/>} />
           <Route exact path='/viewTableRestaurant' element={<Restaurant_View_table/>} />
           <Route exact path='/editTable/:tableId/' element={<Restaurant_Edit_table/>} />
+          <Route exact path='/addfooditemRestaurant' element={<Restaurant_Add_Food_Item/>} />
+          <Route exact path='/viewfooditemRestaurant' element={<Restaurant_View_Food_Item/>} />
         </Routes>
 
-        <Routes>
-          <Route exact path='/userlogin' element={<Login_User />} />
-        </Routes>
+       
       </BrowserRouter>
     </>
   );

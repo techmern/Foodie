@@ -34,6 +34,8 @@ const WelcomePage = () => {
     const handleTable = () => {
         navigate('/addtableRestaurant');
     }
+
+    
     const handleTableView = () => {
         const loguser = localStorage.getItem('restaurants')
 
@@ -41,6 +43,21 @@ const WelcomePage = () => {
             navigate('/loginRestaurant');
         } else {
             navigate('/viewTableRestaurant');
+        }
+    }
+
+    const handleFoodItem = () => {
+        navigate('/addfooditemRestaurant');
+    }
+
+
+    const handleFoodItemView = () => {
+        const loguser = localStorage.getItem('restaurants')
+
+        if (!loguser) {
+            navigate('/loginRestaurant');
+        } else {
+            navigate('/viewfooditemRestaurant');
         }
     }
 
@@ -60,7 +77,7 @@ const WelcomePage = () => {
                 </div>
                 <ul className={test.navListStyle}>
                     <li className={test.navItemStyle}><a href="" className={test.navLinkStyle}>Home</a></li>
-                    <li className={test.navItemStyle}><a href="" className={test.navLinkStyle}>About</a></li>
+                    
                     <li className={test.navItemStyle}>
                         <div className={test.dropdown}>
                             <a href="" className={test.navLinkStyle}>Table</a>
@@ -70,6 +87,20 @@ const WelcomePage = () => {
                             </div>
                         </div>
                     </li>
+                    
+
+                    <li className={test.navItemStyle}>
+                        <div className={test.dropdown}>
+                            <a href="" className={test.navLinkStyle}>Menu</a>
+                            <div className={test.dropdowncontent}>
+                                <a href="" onClick={handleFoodItem}>Add Food Item</a>
+                                <a href="" onClick={handleFoodItemView}>View Food Item</a>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <li className={test.navItemStyle}><a href="" className={test.navLinkStyle}>About</a></li>
+                   
                     <li className={test.navItemStyle}><a href="" className={test.navLinkStyle}>Contact</a></li>
 
                 </ul>
