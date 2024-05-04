@@ -10,6 +10,7 @@ const db = require('./db')
 const createRestaurantRouter = require('./routes/create_restaurant')
 const forgotRestauranttRoutes = require('./routes/forgot_otp_restaurant')
 const tableRestaurantRoutes = require('./routes/create_restaurant_table')
+const menuRestaurantRoutes = require('./routes/create_restaurant_menu')
 
 const app = express()
 app.use(bodyParser.json())
@@ -21,12 +22,13 @@ const port = process.env.PORT
 app.use('/restaurant', createRestaurantRouter)
 app.use('/forgototprestaurant', forgotRestauranttRoutes)
 app.use('/restauranttable', tableRestaurantRoutes)
+app.use('/restaurantmenu', menuRestaurantRoutes)
 
 
 
 // view image from uploads folder
 app.use('/uploads', express.static('uploads'));
-
+app.use('/foodmenu', express.static('foodmenu'));
 
 // 
 app.get('/',(req,res)=>{
