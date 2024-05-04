@@ -186,7 +186,7 @@ function Restaurant_Add_table() {
             fontWeight: 500,
             textAlign: 'center',
             letterSpacing: '1px',
-            margin: '10px',
+            margin: 'auto auto 10px auto',
             width: '300px',
             padding: '8px 0',
             border: '2px solid #fff',

@@ -74,7 +74,6 @@ function EditProfile_Restaurant() {
             textDecoration: 'underline',
             textDecorationColor: 'red',
             textDecorationThickness: '2px',
-            borderBottom: '2px solid red',
         },
 
         fileInput: {
@@ -100,7 +99,7 @@ function EditProfile_Restaurant() {
             fontWeight: 500,
             textAlign: 'center',
             letterSpacing: '1px',
-            margin: '10px',
+            margin: 'auto auto 10px auto',
             width: '300px',
             padding: '8px 0',
             border: '2px solid #fff',

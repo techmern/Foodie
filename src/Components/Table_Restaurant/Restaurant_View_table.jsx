@@ -110,7 +110,8 @@ export default function Restaurant_View_table() {
         th: {
             borderBottom: "2px solid gray",
             padding: "20px",
-            margin: "20px"
+            margin: "20px",
+            textAlign: "center"
         },
         td: {
             padding: "20px",
@@ -187,15 +188,16 @@ export default function Restaurant_View_table() {
                     </button>
             <h1 style={style.testing}>View Table Detail</h1>
 
-            <div style={style.wthreeform}>
-                <div className="col-sm-6 col-md-6">
-                    <table className="table-striped" style={style.table}>
+            <div>
+                <div>
+                    <table style={style.table}>
                         <thead>
                             <tr>
                                 <th style={style.th}>Restaurants Name</th>
                                 <th style={style.th}>Table Number</th>
                                 <th style={style.th}>Table Capacity</th>
                                 <th style={style.th}>Table Availability</th>
+                                <th style={style.th}></th>
                                 <th style={style.th}>Action</th>
                             </tr>
                         </thead>
