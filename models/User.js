@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema({
     User_profile:{
         type:String,
     },
-    Token:{
-        type:Number,
+    token:{
+        type:String,
 
     },
     
