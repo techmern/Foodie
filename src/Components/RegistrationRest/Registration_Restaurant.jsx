@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import './style.css'
+// import './style.css'
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
