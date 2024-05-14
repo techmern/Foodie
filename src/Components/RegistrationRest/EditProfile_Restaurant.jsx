@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import bcrypt from 'bcryptjs';
@@ -121,7 +121,8 @@ function EditProfile_Restaurant() {
         },
     };
 
-
+    
+    
     const [showToast, setShowToast] = useState(false)
     const [msg, setMsg] = useState('')
     const [type, setType] = useState('')
@@ -133,10 +134,10 @@ function EditProfile_Restaurant() {
 
 
     const navigate = useNavigate();
-    const loguser = localStorage.getItem('restaurants')
-
-    const restaurants = JSON.parse(loguser);
-
+   
+    const loguser = localStorage.getItem('restaurants');
+    const restaurants = loguser ? JSON.parse(loguser) : {}; 
+      
     const handleInputChange = (e) => {
         const { name, value } = e.target
         setFormData({
@@ -148,6 +149,7 @@ function EditProfile_Restaurant() {
             [name]: '',
         })
     }
+
 
     const [formData, setFormData] = useState({
         restaurantname: restaurants.restaurantname,
@@ -161,7 +163,8 @@ function EditProfile_Restaurant() {
         restaurantImg: restaurants.restaurantImg,
 
     })
-
+    
+    
     const [errors, setErrors] = useState({
         restaurantname: '',
         emailid: '',
@@ -170,7 +173,26 @@ function EditProfile_Restaurant() {
         address: '',
         city: '',
         postalcode: '',
+        restaurantImg:'',
     })
+
+    useEffect(() => {
+        if (!loguser) {
+            navigate('/loginRestaurant');
+        } else {
+            setFormData({
+                ...formData,
+                restaurantname: restaurants.restaurantname,
+                emailid: restaurants.emailid,
+                mobno: restaurants.mobno,
+                address: restaurants.address,
+                city: restaurants.city,
+                postalcode: restaurants.postalcode,
+                restaurantStatus: restaurants.restaurantStatus,
+                restaurantImg: restaurants.restaurantImg,
+            });
+        }
+    }, [loguser, navigate]);
 
     const getdata = async (e) => {
         try {
@@ -489,7 +511,7 @@ function EditProfile_Restaurant() {
                             <img src={formData.imgPreview} style={style.logo} />
                         ) : (
                             restaurants.restaurantImg ? (
-                                <img src={`http://localhost:5000/uploads/${restaurants.restaurantImg}`} style={style.logo} alt="Restaurant Logo" />
+                                <img src={`http://localhost:5000/restaurantlogo/${restaurants.restaurantImg}`} style={style.logo} alt="Restaurant Logo" />
                             ) : (
                                 <img src="./Selectlogo.png" style={style.logo} alt="Default Logo" />
                             )

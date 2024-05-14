@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const PopupBox = ({ item, onClose }) => {
   const style = {
@@ -44,6 +46,44 @@ const PopupBox = ({ item, onClose }) => {
       },
   };
 
+  const loggedInRestaurant = JSON.parse(localStorage.getItem('restaurants'));
+  const [resData, setResData] = useState([]);
+  const navigate = useNavigate();
+
+  const handleEdit = (itemid) =>{
+    navigate(`/editmenu/${itemid}`);
+  }
+  
+  const handleEditImage = (itemid) =>{
+    navigate(`/editmenuimage/${itemid}`);
+  }
+
+  const getRes = async () => {
+    try {
+        const res = await axios.get("http://localhost:5000/restaurantmenu/viewMenu");
+        const filteredData = res.data.filter(item => item.restaurant_id._id === loggedInRestaurant._id);
+        setResData(filteredData);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+  const handleDelete = async (itemid) => {
+    try {
+        const res = await axios.delete(`http://localhost:5000/restaurantmenu/deleteItem/${itemid}`);
+        if (res.data.sts === '1') {
+            alert(res.data.msg);
+            onClose();
+            getRes();
+        } else {
+            console.error("Deletion failed:", res.data.error);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
   return (
     <div className="popup-container" style={style.popupContainer}>
       <span style={style.closeSign} onClick={onClose}>X</span>
@@ -55,8 +95,9 @@ const PopupBox = ({ item, onClose }) => {
         <p>Description: {item.item_description}</p>
         <p>Availability: {item.food_availability}</p>
         <p>Category: {item.food_category}</p>
-        <button style={style.Button}>Edit Item</button>
-        <button style={style.Button}>Delete Item</button>
+        <button style={style.Button} onClick={() => handleEdit(item._id)}>Edit Item</button>
+        <button style={style.Button} onClick={() => handleEditImage(item._id)}>Edit Item Image</button>
+        <button style={style.Button} onClick={() => handleDelete(item._id)}>Delete Item</button>
       </div>
     </div>
   );

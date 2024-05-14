@@ -8,15 +8,7 @@ export default function Restaurant_View_table() {
     const [selectedTables, setSelectedTables] = useState([]);
 
     const loggedInRestaurant = JSON.parse(localStorage.getItem('restaurants'));
-
-    useEffect(() => {
-        if (!loggedInRestaurant) {
-            navigate('/loginRestaurant');
-        } else {
-            getRes();
-        }
-    }, [loggedInRestaurant]);
-
+    
     const getRes = async () => {
         try {
             const res = await axios.get("http://localhost:5000/restauranttable/viewTable");
@@ -26,6 +18,14 @@ export default function Restaurant_View_table() {
             console.error(error);
         }
     }
+    useEffect(() => {
+        if (!loggedInRestaurant) {
+            navigate('/loginRestaurant');
+        } else {
+            getRes();
+        }
+    }, [loggedInRestaurant]);
+
 
     const handleCheckboxChange = (tableId) => {
         const selectedIndex = selectedTables.indexOf(tableId);

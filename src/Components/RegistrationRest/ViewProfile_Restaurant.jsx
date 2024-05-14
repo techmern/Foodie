@@ -119,7 +119,7 @@ const ViewProfile_Restaurant = () => {
                 <h1 style={style.heading}>View Profile</h1>
                 <div style={style.formContainer}>
                     {restaurantData && restaurantData.restaurantImg && (
-                        <img src={`http://localhost:5000/uploads/${restaurantData.restaurantImg}`} alt="Logo" style={style.logo}/>
+                        <img src={`http://localhost:5000/restaurantlogo/${restaurantData.restaurantImg}`} alt="Logo" style={style.logo}/>
                     )}
                     {(!restaurantData || !restaurantData.restaurantImg) && (
                         <img src="./Selectlogo.png" alt="Profile Logo" style={style.logo} />

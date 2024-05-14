@@ -15,6 +15,17 @@ function Restaurant_Edit_table() {
 
     const [tableData, setTableData] = useState({});
 
+    useEffect(() => {
+        const loguser = localStorage.getItem('restaurants');
+        const restaurants = loguser ? JSON.parse(loguser) : {}; 
+      
+      
+        if (!loguser) {
+          navigate('/loginRestaurant');
+          return;
+        }
+      }, [navigate]);
+
     const [formData, setFormData] = useState({
         table_number: '',
         table_capacity: '',
@@ -237,7 +248,7 @@ function Restaurant_Edit_table() {
                 <div class="mb-3">
                     <label style={style.label} htmlFor="table_availability" className="form-label">Select a Table Availability:</label>
                     <br />
-                    <select style={style.input} name="table_availability" id="table_availability"  value={formData.table_availability}>
+                    <select style={style.input} name="table_availability" id="table_availability"  value={formData.table_availability}  onChange={handleChange}>
                         <option value="Available">Available</option>
                         <option value="Not Available">Not Available</option>
                     </select>

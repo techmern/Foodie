@@ -5,7 +5,7 @@ import PopupBox from './PopupBox';
 
 
 function Restaurant_View_Food_Item() {
- 
+
   const style = {
     container: {
       display: 'flex',
@@ -15,16 +15,19 @@ function Restaurant_View_Food_Item() {
       margin: 'auto',
       marginTop: '30px',
     },
+    
     itemContainer: {
-      width: '23%',
+      width: '30%',
       marginBottom: '20px',
       border: '1px solid #ccc',
       borderRadius: '5px',
       padding: '10px',
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      boxSizing: 'border-box',
     },
+    
     image: {
       display: 'flex',
       justifyContent: 'center',
@@ -55,16 +58,30 @@ function Restaurant_View_Food_Item() {
       textAlign: 'center',
       marginTop: 'auto',
     },
+
+    titlemenu: {
+      fontSize: '26px',
+      marginBottom: '10px',
+      display: 'flex',
+      justifyContent: 'center',
+      color: 'black',
+      fontWeight: 'bold',
+      textDecoration: 'underline'
+    },
+
   };
-  
+
 
   const navigate = useNavigate();
-  
+
   const [selectedItem, setSelectedItem] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [resData, setResData] = useState([]);
 
   const loggedInRestaurant = JSON.parse(localStorage.getItem('restaurants'));
+  const restaurants = loggedInRestaurant || {};
+
+  
 
   const getRes = async () => {
     try {
@@ -94,20 +111,24 @@ function Restaurant_View_Food_Item() {
   };
 
   return (
+    <div>
+    {restaurants && restaurants.restaurantname && (
+      <div style={style.titlemenu}>{restaurants.restaurantname}'s Menu</div>
+    )}
     <div style={style.container}>
       {resData.map((item, index) => (
         <div key={index} style={style.itemContainer}>
           <img src={`http://localhost:5000/foodmenu/${item.food_itemImg}`} style={style.image} />
           <div style={style.itemName}>{item.item_name}</div>
           <div style={style.itemPrice}>{item.item_price} Rs.</div>
-          
+
           <button style={style.readMoreButton} onClick={() => handleReadMore(item)}>Read More</button>
-       
+
         </div>
       ))}
-       {showPopup && selectedItem && <PopupBox item={selectedItem} onClose={handleClosePopup} />}
-   
+      {showPopup && selectedItem && <PopupBox item={selectedItem} onClose={handleClosePopup} />}
     </div>
+  </div>
   );
 }
 

@@ -12,14 +12,14 @@ function Restaurant_Add_table() {
     const [type, setType] = useState('')
     const [selectedAvailablity, setselectedAvailablity] = useState('');
 
-    const loguser = localStorage.getItem('restaurants')
+    const loguser = localStorage.getItem('restaurants');
+    const restaurants = loguser ? JSON.parse(loguser) : {}; 
 
-    const restaurants = JSON.parse(loguser);
-
+ 
     const [formData, setFormData] = useState({
         table_number: '',
         table_capacity: '',
-        restaurant_id: restaurants._id,
+        restaurant_id: restaurants && restaurants._id ? restaurants._id : '',
         table_availability: '',
     })
 
@@ -29,6 +29,15 @@ function Restaurant_Add_table() {
         restaurant_id: '',
         table_availability: '',
     })
+
+    useEffect(() => {
+        if (!loguser) {
+            navigate('/loginRestaurant');
+            return;
+          }
+    }, [formData, showToast, msg, type, selectedAvailablity,navigate])
+
+
 
     const handleInputBlur = (e) => {
         const { name, value } = e.target
@@ -61,10 +70,6 @@ function Restaurant_Add_table() {
             [name]: '',
         })
     }
-
-    useEffect(() => {
-
-    }, [formData, showToast, msg, type, selectedAvailablity])
 
 
     const handleSubmit = async (e) => {

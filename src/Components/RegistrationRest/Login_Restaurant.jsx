@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ErrorMessage } from '../CommonLayouts/ErrorMsg/ErrorMessage';
 
 function Login_Restaurant() {
+    
     const navigate = useNavigate();
     const [emailid, setEamilid] = useState('');
     const [password, setPassword] = useState('');
@@ -32,13 +33,14 @@ function Login_Restaurant() {
             }
 
             const res = await axios.post("http://localhost:5000/restaurant/login", { emailid, password });
-            const { msg, loginsts, restaurants } = res.data;
+            const { msg, loginsts, restaurants,token } = res.data;
+            console.log(res);
 
             if (loginsts === 2) {
+                localStorage.setItem('token', res.data.token);
                 localStorage.setItem('restaurants', JSON.stringify(restaurants));
                 navigate('/welcomeRestaurant');
             } else {
-                // setError(msg);
                 setErrors({
                     ...errors,
                 })

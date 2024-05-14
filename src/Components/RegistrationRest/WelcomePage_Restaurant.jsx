@@ -1,20 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import test from './EditProfle.module.css'
+import axios from 'axios';
 
 const WelcomePage = () => {
 
     const navigate = useNavigate();
 
     const loguser = localStorage.getItem('restaurants')
+    const token = localStorage.getItem('token')
 
+    useEffect(()=>{
+        const token = localStorage.getItem('token')
+        if (token===null){
+                navigate('/loginRestaurant');
+            }
+    })
+  
     const restaurants = JSON.parse(loguser);
+
+    const [tokendt, settokendt] = useState({
+      token
+    });
 
     const handleLogout = async (e) => {
         e.preventDefault();
         try {
-            localStorage.removeItem('restaurants')
-            navigate('/loginRestaurant');
+            const res = await axios.post(' http://localhost:5000/restaurant/logout',tokendt)
+            if (res.data.logout_sts===0) {
+                localStorage.removeItem('token')
+                localStorage.removeItem('restaurants')
+                navigate('/loginRestaurant');
+            } else {
+                console.log("Logout Failed due to server issue");
+            }
         } catch (error) {
             console.error('Error updating logout time:', error);
         }
@@ -22,6 +41,10 @@ const WelcomePage = () => {
 
     const handleProfile = () => {
         const loguser = localStorage.getItem('restaurants')
+
+        if (token === ''){
+            navigate('/loginRestaurant');
+        }
 
         if (!loguser) {
             navigate('/loginRestaurant');
@@ -119,7 +142,7 @@ const WelcomePage = () => {
 
             <div className={test.bodycolor}>
 
-
+                {/* <p>Token is : {token}</p> */}
 
             </div>
 

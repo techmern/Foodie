@@ -6,6 +6,8 @@ import { ErrorMessage } from '../CommonLayouts/ErrorMsg/ErrorMessage';
 import Cropper from 'react-easy-crop';
 
 function Restaurant_Add_Food_Item() {
+
+    const navigate = useNavigate();
     const [showToast, setShowToast] = useState(false);
     const [msg, setMsg] = useState('');
     const [type, setType] = useState('');
@@ -24,7 +26,7 @@ function Restaurant_Add_Food_Item() {
     const [formData, setFormData] = useState({
         item_name: '',
         item_price: '',
-        restaurant_id: restaurants._id,
+       restaurant_id: restaurants && restaurants._id ? restaurants._id : '',
         item_ingredients: '',
         item_description: '',
         food_availability: '',
@@ -79,8 +81,11 @@ function Restaurant_Add_Food_Item() {
     }
 
     useEffect(() => {
-
-    }, [formData, showToast, msg, type, selectedAvailablity, selectedCategory])
+        if (!loguser) {
+            navigate('/loginRestaurant');
+            return;
+          }
+    }, [formData, showToast, msg, type, selectedAvailablity, selectedCategory,navigate])
 
 
     const handleSubmit = async (e) => {
@@ -322,7 +327,7 @@ function Restaurant_Add_Food_Item() {
                                         image={formData.imgPreview}
                                         crop={crop}
                                         zoom={zoom}
-                                        aspect={3 / 3}
+                                        aspect={4 / 4}
                                         onCropChange={onCropChange}
                                         onZoomChange={onZoomChange}
                                         onCropComplete={onCropComplete}
@@ -337,7 +342,7 @@ function Restaurant_Add_Food_Item() {
                             <input style={style.formInput} type="text" name="item_name" id="item_name" placeholder="Food Item Name" required onBlur={handleInputBlur} onChange={handleInputChange} />
                             <input style={style.formInput} type="text" name="item_price" id="item_price" placeholder="Food Item Price" required onBlur={handleInputBlur} onChange={handleInputChange} />
                             <input style={style.formInput} type="text" name="item_ingredients" id="item_ingredients" placeholder="Food Item Ingredients" required onBlur={handleInputBlur} onChange={handleInputChange} />
-                            <input style={style.formInput} type="text" name="item_description" id="item_description" placeholder="Food Item Description" required onBlur={handleInputBlur} onChange={handleInputChange} />
+                            <textarea style={style.formInput} name="item_description" id="item_description" placeholder="Food Item Description" required onBlur={handleInputBlur} onChange={handleInputChange} />
 
                             <select style={style.formSelect} name="food_availability" id="food_availability" onChange={handleChangeAvailablity}>
                                 <option value="Available">Available</option>
