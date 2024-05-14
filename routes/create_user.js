@@ -161,12 +161,9 @@ router.post('/userlogout', async (req, res) => {
             return res.json({ 'msg': 'Logout Succuessfully', 'logoutsts': 0 })
         } else {
             return res.json({ 'msg': 'Failed to login', 'logoutsts': 1 })
-
         }
     } catch (error) {
         res.status(500).json({ 'Error': error })
-
-
     }
 })
 

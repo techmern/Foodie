@@ -27,7 +27,7 @@ app.use('/restaurantmenu', menuRestaurantRoutes)
 
 
 // view image from uploads folder
-app.use('/uploads', express.static('uploads'));
+app.use('/restaurantlogo', express.static('restaurantlogo'));
 app.use('/foodmenu', express.static('foodmenu'));
 
 // 

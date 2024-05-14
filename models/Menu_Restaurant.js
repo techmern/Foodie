@@ -8,19 +8,19 @@ const menuSchema = new mongoose.Schema({
     },
     item_name:{
         type:String,
-        required:true,
+       
     },
     item_price:{
-        type:Number,
-        required:true,
+        type:String,
+       
     }, 
     item_description:{
         type:String,
-        required:true,
+       
     },
     item_ingredients:{
         type:String,
-        required:true,
+       
     },
     food_availability:{
         type:String, 

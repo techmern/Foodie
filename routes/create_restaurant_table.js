@@ -89,8 +89,8 @@ router.put('/updateTable/:tableId',async(req,res)=>{
             req.body,
             {new:true}
             )
-            res.status(200).json({'msg':'Table has Updated Successfully','sts':'1'})
-            res.json(updateTable)
+            res.status(200).json({'msg':'Table has Updated Successfully','sts':'1', data: updateTable})
+            // res.json(updateTable)
     } catch (error) {
         res.status(500).json({"error":error})
     }
