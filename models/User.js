@@ -17,6 +17,17 @@ const userSchema = new mongoose.Schema({
         type:Number,
         required:true,
     },
+    User_profile:{
+        type:String,
+    },
+
+    token:{
+        type:String,
+
+    },
+
+    
+
 })
 
 module.exports = mongoose.model('user',userSchema)
