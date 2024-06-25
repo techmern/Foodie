@@ -121,8 +121,8 @@ function EditProfile_Restaurant() {
         },
     };
 
-    
-    
+
+
     const [showToast, setShowToast] = useState(false)
     const [msg, setMsg] = useState('')
     const [type, setType] = useState('')
@@ -131,24 +131,26 @@ function EditProfile_Restaurant() {
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const [isCropping, setIsCropping] = useState(false);
     const [showCroppedImage, setShowCroppedImage] = useState(false);
+    const [cities, setCities] = useState([]);
 
 
     const navigate = useNavigate();
-   
+
     const loguser = localStorage.getItem('restaurants');
-    const restaurants = loguser ? JSON.parse(loguser) : {}; 
-      
+    const restaurants = loguser ? JSON.parse(loguser) : {};
+
+
     const handleInputChange = (e) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
-        })
+        });
         setErrors({
             ...errors,
             [name]: '',
-        })
-    }
+        });
+    };
 
 
     const [formData, setFormData] = useState({
@@ -161,10 +163,8 @@ function EditProfile_Restaurant() {
         postalcode: restaurants.postalcode,
         restaurantStatus: restaurants.restaurantStatus,
         restaurantImg: restaurants.restaurantImg,
+    });
 
-    })
-    
-    
     const [errors, setErrors] = useState({
         restaurantname: '',
         emailid: '',
@@ -173,8 +173,8 @@ function EditProfile_Restaurant() {
         address: '',
         city: '',
         postalcode: '',
-        restaurantImg:'',
-    })
+        restaurantImg: '',
+    });
 
     useEffect(() => {
         if (!loguser) {
@@ -193,6 +193,18 @@ function EditProfile_Restaurant() {
             });
         }
     }, [loguser, navigate]);
+
+    useEffect(() => {
+        const fetchCities = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/city/viewCity');
+                setCities(response.data);
+            } catch (error) {
+                console.error('Error fetching cities:', error);
+            }
+        };
+        fetchCities();
+    }, []);
 
     const getdata = async (e) => {
         try {
@@ -222,11 +234,9 @@ function EditProfile_Restaurant() {
         }
     };
 
-
     const handleSubmit = async (e) => {
-
         e.preventDefault();
-
+      
         try {
             if (!formData.restaurantname.trim()) {
                 setShowToast(true);
@@ -246,9 +256,9 @@ function EditProfile_Restaurant() {
                 setType('error');
                 return;
             }
-            if (!formData.mobno.trim()) {
+            if (!formData.mobno) {
                 setShowToast(true);
-                setMsg('Please enter mobile number');
+                setMsg('Please enter a valid mobile number');
                 setType('error');
                 return;
             }
@@ -270,35 +280,48 @@ function EditProfile_Restaurant() {
                 setType('error');
                 return;
             }
-
             if (!formData.restaurantImg) {
                 setShowToast(true);
                 setMsg('Please upload a restaurant image');
                 setType('error');
                 return;
             }
+        
+            console.log('formData:', formData);
+        
             const formDataToUpload = new FormData();
-            const bcryptPassword = await bcrypt.hash(formData.password, 10);
             formDataToUpload.append('restaurantname', formData.restaurantname);
             formDataToUpload.append('emailid', formData.emailid);
-            formDataToUpload.append('password', bcryptPassword);
+            formDataToUpload.append('password', bcrypt.hash(formData.password, 10));
             formDataToUpload.append('mobno', formData.mobno);
             formDataToUpload.append('address', formData.address);
             formDataToUpload.append('city', formData.city);
             formDataToUpload.append('postalcode', formData.postalcode);
             formDataToUpload.append('restaurantStatus', formData.restaurantStatus);
             formDataToUpload.append('restaurantImg', formData.restaurantImg);
-
+        
+            console.log('formDataToUpload:', formDataToUpload);
+        
             const response = await axios.put(`http://localhost:5000/restaurant/updateProfile/${restaurants._id}`, formDataToUpload);
-
-            const { msg } = response.data;
-            getdata();
-
-
+        
+            if (response.status === 200) {
+                const { msg } = response.data;
+                setShowToast(true);
+                setMsg(msg);
+                setType('success');
+                getdata();
+            } else {
+                throw new Error('Unexpected response status');
+            }
         } catch (error) {
-            console.log('Error updating profile:', error);
+            console.error('Error updating profile:', error);
+            setShowToast(true);
+            setMsg('Error updating profile');
+            setType('error');
         }
     };
+    
+
 
     const handleInputBlur = (e) => {
         const { name, value } = e.target
@@ -547,7 +570,7 @@ function EditProfile_Restaurant() {
                         <input style={style.input} type="text" name="emailid" id="emailid" value={formData.emailid} onChange={handleInputChange} onBlur={handleInputBlur} placeholder="Email Id" required="" />
                     </div>
                     <div class="form-sub-w3">
-                        <input style={style.input} type="password" name="password" id="password" value={formData.password} onChange={handleInputChange} onBlur={handleInputBlur} placeholder="Password" required="" />
+                        <input style={style.input} type="text" name="password" id="password" value={formData.password} onChange={handleInputChange} onBlur={handleInputBlur} placeholder="Password" required="" />
                     </div>
                     <div class="form-sub-w3">
                         <input style={style.input} type="text" name="mobno" id="mobno" value={formData.mobno} onChange={handleInputChange} onBlur={handleInputBlur} placeholder="Mobile No" required="" />
@@ -555,8 +578,19 @@ function EditProfile_Restaurant() {
                     <div class="form-sub-w3">
                         <input style={style.input} type="text" name="address" id="address" value={formData.address} onChange={handleInputChange} onBlur={handleInputBlur} placeholder="Address" required="" />
                     </div>
-                    <div class="form-sub-w3">
+                    {/* <div class="form-sub-w3">
                         <input style={style.input} type="text" name="city" id="city" onChange={handleInputChange} value={formData.city} onBlur={handleInputBlur} placeholder="City" required="" />
+                    </div> */}
+                    <div className="form-sub-w3">
+                        <select name="city" id="city" value={formData.city} onChange={handleInputChange} required="" style={style.input}>
+                            <option value="">Select City</option>
+                            {cities.map((city) => (
+                                <option key={city._id} value={city.cityname}>
+                                    {city.cityname}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.city && <p style={style.errorMessage}>{errors.city}</p>}
                     </div>
                     <div class="form-sub-w3">
                         <input style={style.input} type="text" name="postalcode" id="postalcode" onChange={handleInputChange} value={formData.postalcode} onBlur={handleInputBlur} placeholder="Postal Code" required="" />

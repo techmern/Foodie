@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../CommonLayouts/Navbar/Navbar';
 
 export default function Restaurant_View_table() {
     const navigate = useNavigate();
     const [resData, setResData] = useState([]);
+    const [bookings, setBookings] = useState([]);
     const [selectedTables, setSelectedTables] = useState([]);
 
     const loggedInRestaurant = JSON.parse(localStorage.getItem('restaurants'));
-    
+
     const getRes = async () => {
         try {
             const res = await axios.get("http://localhost:5000/restauranttable/viewTable");
@@ -17,15 +19,44 @@ export default function Restaurant_View_table() {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
+
+    const getBookings = async () => {
+        try {
+            const res = await axios.get("http://localhost:5000/tablebooking/viewBookedTable");
+            setBookings(res.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const updateTableAvailabilityBasedOnBookings = async () => {
+        try {
+            const pendingBookings = bookings;
+
+            for (let booking of pendingBookings) {
+                await axios.put("http://localhost:5000/restauranttable/updateAvailability", {
+                    tableIds: [booking.table_id],
+                    availability: "Booked"
+                });
+            }
+
+            getRes();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         if (!loggedInRestaurant) {
             navigate('/loginRestaurant');
         } else {
             getRes();
+            getBookings().then(() => {
+                updateTableAvailabilityBasedOnBookings();
+            });
         }
     }, [loggedInRestaurant]);
-
 
     const handleCheckboxChange = (tableId) => {
         const selectedIndex = selectedTables.indexOf(tableId);
@@ -50,6 +81,28 @@ export default function Restaurant_View_table() {
             console.error(error);
         }
     };
+
+    const updateBooked = async () => {
+        try {
+            for (let tableId of selectedTables) {
+                const table = resData.find(item => item._id === tableId);
+                if (table.table_availability === "Booked") {
+                    navigate(`/bookingDetails/${tableId}`);
+                    return;
+                }
+            }
+
+            await axios.put("http://localhost:5000/restauranttable/updateAvailability", {
+                tableIds: selectedTables,
+                availability: "Booked"
+            });
+            getRes();
+            setSelectedTables([]);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const updateAvailability = async () => {
         try {
             await axios.put("http://localhost:5000/restauranttable/updateAvailability", {
@@ -65,7 +118,7 @@ export default function Restaurant_View_table() {
 
     const handleEdit = (tableId) => {
         navigate(`/editTable/${tableId}`);
-    }
+    };
 
     const deleteTable = async (tableId) => {
         try {
@@ -79,8 +132,11 @@ export default function Restaurant_View_table() {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
+    const isTableBooked = (tableId) => {
+        return bookings.some(booking => booking.table_id === tableId);
+    };
 
     const style = {
         testing: {
@@ -119,18 +175,34 @@ export default function Restaurant_View_table() {
             textAlign: "center"
         },
         btn: {
+            width: "30%",
             fontSize: "1em",
             fontWeight: "500",
             textAlign: "center",
             border: "2px solid #fff",
             outline: "none",
             cursor: "pointer",
-            width: "50%",
             color: "black",
             backgroundColor: "#f2f2f2",
             boxSizing: "border-box",
             borderRadius: "1em",
-            marginBottom: "5px"
+            marginBottom: "5px",
+            flex: "1",
+            marginLeft: "5px",
+            marginBottom: '10px',
+        },
+        btnBook: {
+            width: "30%",
+            fontSize: "1em",
+            fontWeight: "500",
+            textAlign: "center",
+            outline: "none",
+            cursor: "pointer",
+            color: "black",
+            marginBottom: "5px",
+            flex: "1",
+            marginLeft: "5px",
+            marginBottom: '10px',
         },
         btnHover: {
             fontSize: "1em",
@@ -163,8 +235,7 @@ export default function Restaurant_View_table() {
         },
         backButton: {
             position: 'absolute',
-            left: '20px',
-            top: '20px',
+            marginLeft: '20px',
             padding: '10px 20px',
             backgroundColor: 'red',
             color: '#fff',
@@ -180,101 +251,114 @@ export default function Restaurant_View_table() {
         navigate('/addtableRestaurant');
     };
 
+    const handleBookingClick = (tableId) => {
+        navigate(`/bookingDetailsRestaurant/${tableId}`);
+    };
+
+
     return (
-
-        <div style={style.bodycolor}>
-<button style={style.backButton} onClick={handleBack} onMouseEnter={(e) => (e.target.style.background = '#e0a800')}
-                        onMouseLeave={(e) => (e.target.style.background = 'red')}>Back
-                    </button>
-            <h1 style={style.testing}>View Table Detail</h1>
-
-            <div>
+        <div>
+            <Navbar />
+            <div style={style.bodycolor}>
+                <button style={style.backButton} onClick={handleBack} onMouseEnter={(e) => (e.target.style.background = '#e0a800')}
+                    onMouseLeave={(e) => (e.target.style.background = 'red')}>Back
+                </button>
+                <h1 style={style.testing}>View Table Detail</h1>
                 <div>
-                    <table style={style.table}>
-                        <thead>
-                            <tr>
-                                <th style={style.th}>Restaurants Name</th>
-                                <th style={style.th}>Table Number</th>
-                                <th style={style.th}>Table Capacity</th>
-                                <th style={style.th}>Table Availability</th>
-                                <th style={style.th}></th>
-                                <th style={style.th}>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {resData.map((item, index) => (
-                                <tr key={index}>
-
-                                    <td style={style.td}>{item.restaurant_id.restaurantname}</td>
-                                    <td style={style.td}>{item.table_number}</td>
-                                    <td style={style.td}>{item.table_capacity}</td>
-                                    <td style={style.td}>{item.table_availability}</td>
-                                    <td style={style.td}>
-                                        <input type="checkbox" onChange={() => handleCheckboxChange(item._id)} checked={selectedTables.includes(item._id)} />
-                                    </td>
-                                    <td style={style.td}>
-
-                                        <input type="button" value="Edit" onClick={() => handleEdit(item._id)} id="Submit" name="Submit" style={style.btneditdel}
-                                            onMouseOver={(e) => {
-                                                e.target.style.backgroundColor = '#f2f2f2';
-                                                e.target.style.color = 'red';
-                                            }}
-                                            onMouseOut={(e) => {
-                                                e.target.style.backgroundColor = '#f2f2f2';
-                                                e.target.style.color = 'black';
-                                                e.target.style.transition = '0.5s all';
-                                            }} />
-                                        
-                                        <br/>
-
-                                        <input type="button" value="Delete" onClick={() => deleteTable(item._id)} id="Submit" name="Submit" style={style.btneditdel}
-                                            onMouseOver={(e) => {
-                                                e.target.style.backgroundColor = '#f2f2f2';
-                                                e.target.style.color = 'red';
-                                            }}
-                                            onMouseOut={(e) => {
-                                                e.target.style.backgroundColor = '#f2f2f2';
-                                                e.target.style.color = 'black';
-                                                e.target.style.transition = '0.5s all';
-                                            }} />
-                                      
-
-
-                                        </td>
+                    <div>
+                        <table style={style.table}>
+                            <thead>
+                                <tr>
+                                    <th style={style.th}>Restaurants Name</th>
+                                    <th style={style.th}>Table Number</th>
+                                    <th style={style.th}>Table Capacity</th>
+                                    <th style={style.th}>Table Availability</th>
+                                    <th style={style.th}></th>
+                                    <th style={style.th}>Action</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                        <div>
+                            </thead>
+                            <tbody>
+                                {resData.map((item, index) => (
+                                    <tr key={index}>
+                                        <td style={style.td}>{item.restaurant_id.restaurantname}</td>
+                                        <td style={style.td}>{item.table_number}</td>
+                                        <td style={style.td}>{item.table_capacity}</td>
+                                        <td style={style.td}>
+                                            {isTableBooked(item._id) ? (
+                                                <button style={style.btnBook} onClick={() => handleBookingClick(item._id)}>Booked</button>
+                                            ) : (
+                                                item.table_availability
+                                            )}
+                                        </td>
 
-                            <input type="button" value="Available" onClick={updateAvailability} id="Submit" name="Submit" style={style.btn}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#f2f2f2';
-                                    e.target.style.color = 'red';
-                                    e.target.style.borderRadius = '1em';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#f2f2f2';
-                                    e.target.style.color = 'black';
-                                    e.target.style.transition = '0.5s all';
-                                }} />
-
-                            <input type="button" value="Not Available" onClick={updateNotAvailability} id="Submit" name="Submit" style={style.btn}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#f2f2f2';
-                                    e.target.style.color = 'red';
-                                    e.target.style.borderRadius = '1em';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#f2f2f2';
-                                    e.target.style.color = 'black';
-                                    e.target.style.transition = '0.5s all';
-                                }} />
-                        </div>
-                    </table>
+                                        <td style={style.td}>
+                                            <input type="checkbox" onChange={() => handleCheckboxChange(item._id)} checked={selectedTables.includes(item._id)} />
+                                        </td>
+                                        <td style={style.td}>
+                                            <input type="button" value="Edit" onClick={() => handleEdit(item._id)} id="Submit" name="Submit" style={style.btneditdel}
+                                                onMouseOver={(e) => {
+                                                    e.target.style.backgroundColor = '#f2f2f2';
+                                                    e.target.style.color = 'red';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.target.style.backgroundColor = '#f2f2f2';
+                                                    e.target.style.color = 'black';
+                                                    e.target.style.transition = '0.5s all';
+                                                }} />
+                                            <br />
+                                            <input type="button" value="Delete" onClick={() => deleteTable(item._id)} id="Submit" name="Submit" style={style.btneditdel}
+                                                onMouseOver={(e) => {
+                                                    e.target.style.backgroundColor = '#f2f2f2';
+                                                    e.target.style.color = 'red';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.target.style.backgroundColor = '#f2f2f2';
+                                                    e.target.style.color = 'black';
+                                                    e.target.style.transition = '0.5s all';
+                                                }} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <div>
+                                <input type="button" value="Available" onClick={updateAvailability} id="Submit" name="Submit" style={style.btn}
+                                    onMouseOver={(e) => {
+                                        e.target.style.backgroundColor = '#f2f2f2';
+                                        e.target.style.color = 'red';
+                                        e.target.style.borderRadius = '1em';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.backgroundColor = '#f2f2f2';
+                                        e.target.style.color = 'black';
+                                        e.target.style.transition = '0.5s all';
+                                    }} />
+                                <input type="button" value="Not Available" onClick={updateNotAvailability} id="Submit" name="Submit" style={style.btn}
+                                    onMouseOver={(e) => {
+                                        e.target.style.backgroundColor = '#f2f2f2';
+                                        e.target.style.color = 'red';
+                                        e.target.style.borderRadius = '1em';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.backgroundColor = '#f2f2f2';
+                                        e.target.style.color = 'black';
+                                        e.target.style.transition = '0.5s all';
+                                    }} />
+                                <input type="button" value="Booked" onClick={updateBooked} id="Submit" name="Submit" style={style.btn}
+                                    onMouseOver={(e) => {
+                                        e.target.style.backgroundColor = '#f2f2f2';
+                                        e.target.style.color = 'red';
+                                        e.target.style.borderRadius = '1em';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.backgroundColor = '#f2f2f2';
+                                        e.target.style.color = 'black';
+                                        e.target.style.transition = '0.5s all';
+                                    }} />
+                            </div>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-
-
-    )
+    );
 }

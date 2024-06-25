@@ -1,0 +1,118 @@
+.navbarStyle {
+    background-color: #9a9898;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navListStyle {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    margin-left: 20px;
+    flex-grow: 1;
+}
+
+.navItemStyle {
+    margin-right: 20px;
+}
+
+.navLinkStyle {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px 15px;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+.navLinkStyle:hover {
+    color: #333;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.logo {
+    cursor: pointer;
+}
+
+.logoIcon {
+    width: 100px;
+    height: 70px;
+    margin-left: auto;
+    border-radius: 50px;
+    margin-top: 10px;
+}
+
+.navLinkActive {
+    color: #ff0000; /* Active link color */
+    text-decoration: underline;
+     color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px 15px;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+
+.drivername{
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.profileSection {
+    display: flex;
+    align-items: center;
+}
+
+.profileIcon,
+.logoutIcon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    margin-left: auto;
+    border-radius: 50px;
+    margin-top: auto;
+}
+
+.profileIcon:hover {
+    transform: scale(1.1);
+}
+
+.dropdownprofile {
+    position: relative;
+}
+
+.dropdowncontentprofile {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+    border-radius: 5px;
+}
+
+.dropdowncontentprofile a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+}
+
+.dropdowncontentprofile a:hover {
+    background-color: #ddd;
+}
+
+.dropdownprofile:hover .dropdowncontentprofile {
+    display: block;
+}

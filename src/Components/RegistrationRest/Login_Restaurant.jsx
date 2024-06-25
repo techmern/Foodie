@@ -287,7 +287,7 @@ function Login_Restaurant() {
 
                     </form>
                     <br />
-                    {/* {error && <a>{error}</a>} */}
+                   
                 </div>
             </div>
         </div>

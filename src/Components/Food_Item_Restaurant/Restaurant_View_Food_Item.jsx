@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PopupBox from './PopupBox';
+import Navbar from '../CommonLayouts/Navbar/Navbar'
 
 
 function Restaurant_View_Food_Item() {
@@ -65,6 +66,7 @@ function Restaurant_View_Food_Item() {
       display: 'flex',
       justifyContent: 'center',
       color: 'black',
+      marginTop:'10px',
       fontWeight: 'bold',
       textDecoration: 'underline'
     },
@@ -112,6 +114,7 @@ function Restaurant_View_Food_Item() {
 
   return (
     <div>
+      <Navbar/>
     {restaurants && restaurants.restaurantname && (
       <div style={style.titlemenu}>{restaurants.restaurantname}'s Menu</div>
     )}

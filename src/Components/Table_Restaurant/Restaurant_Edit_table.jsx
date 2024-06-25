@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import { ErrorMessage } from '../CommonLayouts/ErrorMsg/ErrorMessage';
+import Navbar from '../CommonLayouts/Navbar/Navbar'
 
 function Restaurant_Edit_table() {
     const navigate = useNavigate();
@@ -17,14 +18,14 @@ function Restaurant_Edit_table() {
 
     useEffect(() => {
         const loguser = localStorage.getItem('restaurants');
-        const restaurants = loguser ? JSON.parse(loguser) : {}; 
-      
-      
+        const restaurants = loguser ? JSON.parse(loguser) : {};
+
+
         if (!loguser) {
-          navigate('/loginRestaurant');
-          return;
+            navigate('/loginRestaurant');
+            return;
         }
-      }, [navigate]);
+    }, [navigate]);
 
     const [formData, setFormData] = useState({
         table_number: '',
@@ -39,16 +40,15 @@ function Restaurant_Edit_table() {
         table_availability: '',
     })
 
-    
+
     useEffect(() => {
         fetchTableData(tableId);
     }, [tableId]);
 
     const fetchTableData = async (tableId) => {
         try {
-            // console.log(tableId);
             const res = await axios.get(`http://localhost:5000/restauranttable/getTable/${tableId}`);
-            setTableData(res.data); 
+            setTableData(res.data);
             setFormData({
                 table_number: res.data.table_number,
                 table_capacity: res.data.table_capacity,
@@ -82,6 +82,8 @@ function Restaurant_Edit_table() {
         }
     }
     const handleSubmit = async (e) => {
+        e.preventDefault();
+
         try {
             if (!formData.table_number.trim()) {
                 setShowToast(true);
@@ -95,7 +97,7 @@ function Restaurant_Edit_table() {
                 setType('error');
                 return;
             }
-              const res = await axios.put(`http://localhost:5000/restauranttable/updateTable/${tableId}`, formData);
+            const res = await axios.put(`http://localhost:5000/restauranttable/updateTable/${tableId}`, formData);
             if (res.data.sts === '1') {
                 // e.preventDefault()
                 // setShowToast(true)
@@ -104,10 +106,10 @@ function Restaurant_Edit_table() {
                 // setTimeout(() => {
                 //     setShowToast(false)
                 // }, 3000)
-                alert(res.data.msg);  
+                alert(res.data.msg);
                 navigate('/viewTableRestaurant');
             } else {
-                console.error("Deletion failed:", res.data.error); 
+                console.error("Deletion failed:", res.data.error);
             }
 
         } catch (error) {
@@ -116,7 +118,7 @@ function Restaurant_Edit_table() {
 
     }
 
-    
+
     const style = {
         body: {
             backgroundImage: "url('/table_bg.jpg')",
@@ -125,15 +127,15 @@ function Restaurant_Edit_table() {
             height: "100vh",
             margin: 0,
             padding: "10px"
-          },
-          span: {
+        },
+        span: {
             color: "red"
-          },
-          bottomtext: {
+        },
+        bottomtext: {
             color: "red",
             fontSize: "20px"
-          },
-          wthreeform: {
+        },
+        wthreeform: {
             textAlign: "center",
             backgroundColor: "rgba(255, 255, 255, 0.07)",
             width: "40%",
@@ -142,8 +144,8 @@ function Restaurant_Edit_table() {
             boxShadow: "1px 1px 0px red",
             opacity: "10",
             boxSizing: "border-box"
-          },
-          h1: {
+        },
+        h1: {
             fontSize: "45px",
             fontWeight: 400,
             textAlign: "center",
@@ -208,8 +210,8 @@ function Restaurant_Edit_table() {
         },
         backButton: {
             position: 'absolute',
-            left: '20px',
-            top: '20px',
+            MarginLeft: '20px',
+            marginTop: '20px',
             padding: '10px 20px',
             backgroundColor: 'red',
             color: '#fff',
@@ -225,57 +227,64 @@ function Restaurant_Edit_table() {
         navigate('/viewTableRestaurant');
     };
 
-    
-  return (
-    <div style={style.body}>
-<button style={style.backButton} onClick={handleBack} onMouseEnter={(e) => (e.target.style.background = '#e0a800')}
-                        onMouseLeave={(e) => (e.target.style.background = 'red')}>Back
-                    </button>
-    <h1 style={style.h1}><span style={style.span}>Update Tables Details</span></h1>
-    <ErrorMessage showToast={showToast} msg={msg} type={type} />
-    <div style={style.wthreeform}>
-        <div class="w3l-login form">
 
-            <form>
-                <div class="form-sub-w3">
-                    <input style={style.input} type="text" name='table_number' class="form-control" id="table_number" onBlur={handleInputBlur}  placeholder="Table Number" value={formData.table_number}
-                        onChange={handleChange} required="" />
+    return (
+
+        <div>
+
+            <Navbar />
+
+            <div style={style.body}>
+                <button style={style.backButton} onClick={handleBack} onMouseEnter={(e) => (e.target.style.background = '#e0a800')}
+                    onMouseLeave={(e) => (e.target.style.background = 'red')}>Back
+                </button>
+                <h1 style={style.h1}><span style={style.span}>Update Tables Details</span></h1>
+                <ErrorMessage showToast={showToast} msg={msg} type={type} />
+                <div style={style.wthreeform}>
+                    <div class="w3l-login form">
+
+                        <form>
+                            <div class="form-sub-w3">
+                                <input style={style.input} type="text" name='table_number' class="form-control" id="table_number" onBlur={handleInputBlur} placeholder="Table Number" value={formData.table_number}
+                                    onChange={handleChange} required="" />
+                            </div>
+                            <div class="form-sub-w3">
+                                <input style={style.input} type="text" name='table_capacity' class="form-control" id="table_capacity" onBlur={handleInputBlur} placeholder="Table Capacity" value={formData.table_capacity}
+                                    onChange={handleChange} required="" />
+                            </div>
+                            <div class="mb-3">
+                                <label style={style.label} htmlFor="table_availability" className="form-label">Select a Table Availability:</label>
+                                <br />
+                                <select style={style.input} name="table_availability" id="table_availability" value={formData.table_availability} onChange={handleChange}>
+                                    <option value="Available">Available</option>
+                                    <option value="Not Available">Not Available</option>
+                                    <option value="Booked">Booked</option>
+                                </select>
+                            </div>
+
+                            <div class="submit-agileits">
+                                <input type="button" value="Update" onClick={handleSubmit} id='Submit' name='Submit' style={style.button}
+                                    onMouseOver={(e) => {
+                                        e.target.style.backgroundColor = 'transparent';
+                                        e.target.style.color = '#fff';
+                                        e.target.style.borderRadius = '2em';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.backgroundColor = 'white';
+                                        e.target.style.color = 'black';
+                                        e.target.style.transition = '0.5s all';
+                                    }} />
+
+                            </div>
+
+
+                        </form>
+
+                    </div>
                 </div>
-                <div class="form-sub-w3">
-                    <input style={style.input} type="text" name='table_capacity' class="form-control" id="table_capacity" onBlur={handleInputBlur} placeholder="Table Capacity"  value={formData.table_capacity}
-                        onChange={handleChange} required="" />
-                </div>
-                <div class="mb-3">
-                    <label style={style.label} htmlFor="table_availability" className="form-label">Select a Table Availability:</label>
-                    <br />
-                    <select style={style.input} name="table_availability" id="table_availability"  value={formData.table_availability}  onChange={handleChange}>
-                        <option value="Available">Available</option>
-                        <option value="Not Available">Not Available</option>
-                    </select>
-                </div>
-
-                <div class="submit-agileits">
-                    <input type="button" value="Update" onClick={handleSubmit}  id='Submit' name='Submit' style={style.button}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = 'transparent';
-                                    e.target.style.color = '#fff';
-                                    e.target.style.borderRadius = '2em';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = 'white';
-                                    e.target.style.color = 'black';
-                                    e.target.style.transition = '0.5s all';
-                                }} />
-
-                </div>
-
-               
-            </form>
-
+            </div>
         </div>
-    </div>
-</div>
-  )
+    )
 }
 
 export default Restaurant_Edit_table

@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 import { ErrorMessage } from '../CommonLayouts/ErrorMsg/ErrorMessage';
 import Cropper from 'react-easy-crop';
+import Navbar from '../CommonLayouts/Navbar/Navbar'
 
 function Restaurant_Add_Food_Item() {
 
@@ -305,6 +306,10 @@ function Restaurant_Add_Food_Item() {
     };
 
     return (
+
+        <div>
+            <Navbar/>
+        
         <div style={style.container}>
             <div style={style.box}>
                 <div style={style.imageContainer}>
@@ -359,6 +364,7 @@ function Restaurant_Add_Food_Item() {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 }

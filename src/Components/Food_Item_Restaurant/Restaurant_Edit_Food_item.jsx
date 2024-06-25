@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorMessage } from '../CommonLayouts/ErrorMsg/ErrorMessage';
 import axios from 'axios';
+import Navbar from '../CommonLayouts/Navbar/Navbar'
 
 function RestaurantEditFoodItem() {
 
@@ -15,6 +16,7 @@ function RestaurantEditFoodItem() {
   const { itemid } = useParams();
 
   const style = {
+    
     pageContainer: {
       display: 'flex',
       justifyContent: 'center',
@@ -32,6 +34,7 @@ function RestaurantEditFoodItem() {
       letterSpacing: "9px",
       wordSpacing: "4px",
       margin: "auto",
+      marginTop:'70px',
       fontFamily: "'Lobster', cursive",
       borderRadius: '10px',
       boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
@@ -39,8 +42,8 @@ function RestaurantEditFoodItem() {
 
     backButton: {
       position: 'absolute',
-      left: '20px',
-      top: '20px',
+      marginLeft: '20px',
+      marginTop: '5px',
       padding: '10px 20px',
       backgroundColor: 'red',
       color: '#fff',
@@ -197,6 +200,7 @@ const fetchMenuData = async (itemid) => {
 };
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       try {
         if (!formData.item_name.trim()) {
@@ -251,11 +255,14 @@ const fetchMenuData = async (itemid) => {
 
   return (
     <div>
+      <Navbar/>
+
+    <button style={style.backButton} onClick={handleBack}>Back</button>
+
     <header style={style.header}>
       <h1>Update Food Item Details</h1>
     </header>
 
-    <button style={style.backButton} onClick={handleBack}>Back</button>
 
     <div style={style.mainContainer}>
       <div style={style.formContainer}>
@@ -263,13 +270,13 @@ const fetchMenuData = async (itemid) => {
         <img src={`http://localhost:5000/foodmenu/${formData.food_itemImg}`} alt="Logo" style={style.image}/>
         <form>
           <label style={style.label} className="form-label">Food Item Name  :</label>
-          <input type="text" placeholder="Food Name" style={style.input} name='item_name'  value={formData.item_name} />
+          <input type="text" placeholder="Food Name" style={style.input} name='item_name'  value={formData.item_name} onChange={handleChange}/>
 
           <label style={style.label} className="form-label">Food Item Price  :</label>
-          <input type="text" placeholder="Price" style={style.input} name='item_price'  value={formData.item_price}/>
+          <input type="text" placeholder="Price" style={style.input} name='item_price'  value={formData.item_price} onChange={handleChange}/>
 
           <label style={style.label} className="form-label">Food Item Ingredients  :</label>
-          <input type="text" placeholder="Ingredients" style={style.input} name='item_ingredients'  value={formData.item_ingredients}/>
+          <input type="text" placeholder="Ingredients" style={style.input} name='item_ingredients'  value={formData.item_ingredients} onChange={handleChange}/>
 
           <label style={style.label} className="form-label">Food Item Description  :</label>
           <textarea placeholder="Description" style={style.input} name='item_description'  value={formData.item_description}></textarea>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 import { ErrorMessage } from '../CommonLayouts/ErrorMsg/ErrorMessage';
+import Navbar from '../CommonLayouts/Navbar/Navbar'
 
 function Restaurant_Add_table() {
 
@@ -13,9 +14,9 @@ function Restaurant_Add_table() {
     const [selectedAvailablity, setselectedAvailablity] = useState('');
 
     const loguser = localStorage.getItem('restaurants');
-    const restaurants = loguser ? JSON.parse(loguser) : {}; 
+    const restaurants = loguser ? JSON.parse(loguser) : {};
 
- 
+
     const [formData, setFormData] = useState({
         table_number: '',
         table_capacity: '',
@@ -34,8 +35,8 @@ function Restaurant_Add_table() {
         if (!loguser) {
             navigate('/loginRestaurant');
             return;
-          }
-    }, [formData, showToast, msg, type, selectedAvailablity,navigate])
+        }
+    }, [formData, showToast, msg, type, selectedAvailablity, navigate])
 
 
 
@@ -128,18 +129,18 @@ function Restaurant_Add_table() {
             backgroundImage: "url('/table_bg.jpg')",
             backgroundSize: "cover",
             backgroundAttachment: "fixed",
-            height: "100vh",
+            height: "87vh",
             margin: 0,
             padding: "10px"
-          },
-          span: {
+        },
+        span: {
             color: "red"
-          },
-          bottomtext: {
+        },
+        bottomtext: {
             color: "red",
             fontSize: "20px"
-          },
-          wthreeform: {
+        },
+        wthreeform: {
             textAlign: "center",
             backgroundColor: "rgba(255, 255, 255, 0.07)",
             width: "40%",
@@ -148,8 +149,8 @@ function Restaurant_Add_table() {
             boxShadow: "1px 1px 0px red",
             opacity: "10",
             boxSizing: "border-box"
-          },
-          h1: {
+        },
+        h1: {
             fontSize: "45px",
             fontWeight: 400,
             textAlign: "center",
@@ -215,49 +216,53 @@ function Restaurant_Add_table() {
     };
 
     return (
-      
-             <div style={style.body}>
+        <div>
 
-            <h1 style={style.h1}><span style={style.span}>Add Tables Details</span></h1>
-            <ErrorMessage showToast={showToast} msg={msg} type={type} />
-            <div style={style.wthreeform}>
-                <div class="w3l-login form">
+            <Navbar />
+            <div style={style.body}>
 
-                    <form>
-                        <div class="form-sub-w3">
-                            <input style={style.input} type="text" name='table_number' class="form-control" id="table_number" onBlur={handleInputBlur} onChange={handleInputChange} placeholder="Table Number" required="" />
-                        </div>
-                        <div class="form-sub-w3">
-                            <input style={style.input} type="text" name='table_capacity' class="form-control" id="table_capacity" onBlur={handleInputBlur} onChange={handleInputChange} placeholder="Table Capacity" required="" />
-                        </div>
-                        <div class="mb-3">
-                            <label style={style.label} htmlFor="table_availability" className="form-label">Select a Table Availability:</label>
-                            <br />
-                            <select style={style.input} name="table_availability" id="table_availability" onChange={handleChangeAvailablity}>
-                                <option value="Available">Available</option>
-                                <option value="Not Available">Not Available</option>
-                            </select>
-                        </div>
+                <h1 style={style.h1}><span style={style.span}>Add Tables Details</span></h1>
+                <ErrorMessage showToast={showToast} msg={msg} type={type} />
+                <div style={style.wthreeform}>
+                    <div class="w3l-login form">
 
-                        <div class="submit-agileits">
-                           <input type="button" value="Submit" onClick={handleSubmit}  id='Submit' name='Submit' style={style.button}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = 'transparent';
-                                    e.target.style.color = '#fff';
-                                    e.target.style.borderRadius = '2em';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = 'white';
-                                    e.target.style.color = 'black';
-                                    e.target.style.transition = '0.5s all';
-                                }} />
+                        <form>
+                            <div class="form-sub-w3">
+                                <input style={style.input} type="text" name='table_number' class="form-control" id="table_number" onBlur={handleInputBlur} onChange={handleInputChange} placeholder="Table Number" required="" />
+                            </div>
+                            <div class="form-sub-w3">
+                                <input style={style.input} type="text" name='table_capacity' class="form-control" id="table_capacity" onBlur={handleInputBlur} onChange={handleInputChange} placeholder="Table Capacity" required="" />
+                            </div>
+                            <div class="mb-3">
+                                <label style={style.label} htmlFor="table_availability" className="form-label">Select a Table Availability:</label>
+                                <br />
+                                <select style={style.input} name="table_availability" id="table_availability" onChange={handleChangeAvailablity}>
+                                    <option value="Available">Available</option>
+                                    <option value="Not Available">Not Available</option>
+                                    <option value="Booked">Booked</option>
+                                </select>
+                            </div>
 
-                        </div>
+                            <div class="submit-agileits">
+                                <input type="button" value="Submit" onClick={handleSubmit} id='Submit' name='Submit' style={style.button}
+                                    onMouseOver={(e) => {
+                                        e.target.style.backgroundColor = 'transparent';
+                                        e.target.style.color = '#fff';
+                                        e.target.style.borderRadius = '2em';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.backgroundColor = 'white';
+                                        e.target.style.color = 'black';
+                                        e.target.style.transition = '0.5s all';
+                                    }} />
 
-                        <a href=""  style={style.a} onClick={handleTableView}>View Table Details</a>
+                            </div>
 
-                    </form>
+                            <a href="" style={style.a} onClick={handleTableView}>View Table Details</a>
 
+                        </form>
+
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-
 function ForgotPassOTPRestaurant() {
-
   const [emailid, setEmailid] = useState('');
   const [otp, setOTP] = useState('');
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setEmailid(value);
-  }
+  };
 
   const generateRandomDigits = (length) => {
     let randomDigits = '';
@@ -22,14 +21,21 @@ function ForgotPassOTPRestaurant() {
     return randomDigits;
   };
 
-  const handleForgotPassOTP = async (e) => {
+  const handleSubmit = async () => {
     const newOTP = generateRandomDigits(6);
     const formData = { emailid, otp: newOTP };
     console.log(newOTP);
-    const res = await axios.post("http://localhost:5000/forgototprestaurant/forgotpassotp", formData)
-    setOTP(newOTP);
-    navigate('/newpasswordotpRestaurant');
-  }
+    try {
+      const res = await axios.post("http://localhost:5000/forgototprestaurant/forgotpassotp", formData);
+      setOTP(newOTP);
+      navigate('/newpasswordotpRestaurant');
+    } catch (error) {
+      console.error('Error:', error);
+      if (error.response && error.response.status === 400) {
+        setErrors({ emailid: "Invalid email ID" });
+      }
+    }
+  };
 
   const style = {
 
@@ -82,6 +88,9 @@ function ForgotPassOTPRestaurant() {
       color: "red",
     },
 
+    errormsg:{
+      color: "white",
+    },
     button: {
       fontSize: '1em',
       fontWeight: 500,
@@ -128,44 +137,33 @@ function ForgotPassOTPRestaurant() {
     navigate('/loginRestaurant');
   };
 
-
   return (
     <div>
-      <button style={style.backButton} onClick={handleBack} onMouseEnter={(e) => (e.target.style.background = '#e0a800')}
-        onMouseLeave={(e) => (e.target.style.background = 'red')}>Back
-      </button>
+      <button style={style.backButton} onClick={handleBack} onMouseEnter={(e) => (e.target.style.background = '#e0a800')} onMouseLeave={(e) => (e.target.style.background = 'red')}>Back</button>
       <h1 style={style.h1}><span style={style.span}>Forgot Password</span></h1>
       <div style={style.wthreeForm}>
-
         <h2 style={style.h2}>Fill out the form below to Get OTP</h2>
-        <div class="w3l-login form">
-
-
-          <div class="mb-3">
-            <input style={style.input} type="text" name='emailid' class="form-control" id="emailid" placeholder="Enter Email Id" onChange={handleInputChange} />
+        <div className="w3l-login form">
+          <div className="mb-3">
+          {errors.emailid && <span style={style.errormsg}>{errors.emailid}</span>}
+            <input style={style.input} type="text" name='emailid' className="form-control" id="emailid" placeholder="Enter Email Id" onChange={handleInputChange} />
           </div>
           <div>
-
-            <input type="button" value="Forgot Password" onClick={handleForgotPassOTP} style={style.button}
-              onMouseOver={(e) => {
-                e.target.style.backgroundColor = 'transparent';
-                e.target.style.color = '#fff';
-                e.target.style.borderRadius = '2em';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.backgroundColor = 'white';
-                e.target.style.color = 'black';
-                e.target.style.transition = '0.5s all';
-              }} />
+            <input type="button" value="Forgot Password" onClick={handleSubmit} style={style.button} onMouseOver={(e) => {
+              e.target.style.backgroundColor = 'transparent';
+              e.target.style.color = '#fff';
+              e.target.style.borderRadius = '2em';
+            }} onMouseOut={(e) => {
+              e.target.style.backgroundColor = 'white';
+              e.target.style.color = 'black';
+              e.target.style.transition = '0.5s all';
+            }} />
           </div>
-
-
           <br />
-
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ForgotPassOTPRestaurant
+export default ForgotPassOTPRestaurant;

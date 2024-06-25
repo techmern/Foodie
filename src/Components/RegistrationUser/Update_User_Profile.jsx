@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 function Update_User_Profile() {
     const navigate = useNavigate();
@@ -30,13 +32,13 @@ function Update_User_Profile() {
     };
 
     const handleFileChange = (e) => {
-        setProfileImage(e.target.files[0]);
+        const file = e.target.files[0];
+        setProfileImage(file);
         setUserdata({
             ...userdata,
-            User_profile: '',
+            User_profile: file.name, // Set User_profile to the file name
         });
     };
-
     useEffect(() => {
         const fetchUserDataFromLocalStorage = () => {
             const userDataFromLocalStorage = localStorage.getItem('User');
@@ -52,7 +54,7 @@ function Update_User_Profile() {
             try {
                 const userDataFromLocalStorage = JSON.parse(localStorage.getItem('User'));
 
-                const response = await axios.get(`http://localhost:5000/user/singleuser/${userDataFromLocalStorage._id}`);
+                const response = await axios.get(`http://localhost:5000/user/singleuser/${userDataFromLocalStorage.userId}`);
                 setUserdata(response.data);
                 setProfileImage(response.data.User_profile);
                 localStorage.setItem('User', JSON.stringify(response.data));
@@ -64,97 +66,100 @@ function Update_User_Profile() {
         getuser();
     }, []);
 
-    const handleFormUpdate = async (e) => {
-        e.preventDefault();
+    const handleFormUpdate = async (event) => {
+        event.preventDefault();
+        
+        const formData = new FormData();
+        formData.append('Email_Id', userdata.Email_Id);
+        formData.append('Password', userdata.Password);
+        formData.append('Username', userdata.Username);
+        formData.append('Mob_No', userdata.Mob_No);
+        if (profileImage) {
+            formData.append('User_profile', profileImage); // Append the file directly
+        }
+    
         try {
-            const formData = new FormData();
-            formData.append('Username', userdata.Username);
-            formData.append('Email_Id', userdata.Email_Id);
-            if (passwordChanged) {
-                formData.append('Password', userdata.Password);
-            }
-            formData.append('Mob_No', userdata.Mob_No);
-            if (profileImage instanceof File) {
-                formData.append('User_profile', profileImage);
-                userdata.User_profile = profileImage.name;
-            }
-
-            // Update local storage before making API call
-            localStorage.setItem('User', JSON.stringify(userdata));
-
-            const response = await axios.put(`http://localhost:5000/user/updateuser`, formData);
-
-            // Fetch updated data from the database after the update
-            const userDataFromLocalStorage = JSON.parse(localStorage.getItem('User'));
-
-            const updatedResponse = await axios.get(`http://localhost:5000/user/singleuser/${userDataFromLocalStorage._id}`);
-            const updatedData = updatedResponse.data;
-
-            // Update local storage with the updated data
-            localStorage.setItem('User', JSON.stringify(updatedData));
-
-            setUserdata({
-                'Username': '',
-                'Email_Id': '',
-                'Mob_No': '',
-                'User_profile': '',
+            const response = await axios.put('http://localhost:5000/user/updateuser', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
-
-            setProfileImage(null);
-            setPasswordChanged(false);
-
-            alert('Data updated successfully');
+    
+            console.log('User updated:', response.data);
+            alert('Profile updated successfully');
+            // Optionally, update local storage with new user data
+            const updatedUserData = {
+                ...userdata,
+                User_profile: response.data.User_profile // Update User_profile with the returned file path
+            };
+            localStorage.setItem('User', JSON.stringify(updatedUserData));
+            // Optionally, navigate to another page
             navigate('/userprofile');
-
-        } catch (error) {
-            console.error('Error updating data:', error);
+        } catch (error) {   
+            console.error('Error updating user data:', error);
+            alert('Failed to update profile');
         }
     };
+    
+    
 
     const imageUrl = profileImage instanceof File ? URL.createObjectURL(profileImage) : `http://localhost:5000/${userdata.User_profile}`;
 
+    const handleBack = () => {
+        window.location.href = '/userprofile';
+    };
+
+    useEffect(() => {
+        AOS.init();
+
+    }, []);
+
     return (
         <div className='container-fluid'>
-            <div className='row justify-content-center mt-4'>
+            <div className='row justify-content-center mt-4' data-aos="fade-up" data-aos-duration="1000">
                 <div className='col-md-4 col-sm-6 col-12'>
                     <div className='p-4' style={{ background: '#f5f5f5', boxShadow: '0 0 10px rgba(0,0,0,0.1)', borderRadius: '5px' }}>
                         <h2 className="text-center mb-4">Edit Your Profile</h2>
+                        <form onSubmit={handleFormUpdate}>
+                            <div className="text-center mb-2">
+                                <img
+                                    src={imageUrl}
+                                    alt="Profile Picture"
+                                    style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }}
+                                />
+                                <input type="file" accept="image/*" style={{ display: 'none' }} id="upload" name="User_profile" onChange={handleFileChange} />
+                            </div>
 
-                        <div className="text-center mb-2">
-                            <img
-                                src={imageUrl}
-                                alt="Profile Picture"
-                                style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }}
-                            />
-                            <input type="file" accept="image/*" style={{ display: 'none' }} id="upload" onChange={handleFileChange} />
-                        </div>
+                            <div className="text-center mb-4">
+                                <label htmlFor="upload" className="btn btn-link">Choose File</label>
+                            </div>
 
-                        <div className="text-center mb-4">
-                            <label htmlFor="upload" className="btn btn-link">Choose File</label>
-                        </div>
+                            <div className="mb-3">
+                                <input type="text" className="form-control" placeholder="Enter Username" id="exampleInputusername1" aria-describedby="emailHelp" name='Username' value={userdata.Username} onChange={handleInputChange} />
+                            </div>
 
-                        <div className="mb-3">
-                            <input type="text" className="form-control" placeholder="Enter Username" id="exampleInputusername1" aria-describedby="emailHelp" name='Username' value={userdata.Username} onChange={handleInputChange} />
-                        </div>
+                            <div className="mb-3">
+                                <input type="email" className="form-control" placeholder="Enter email" name='Email_Id' id="exampleInputEmail1" aria-describedby="emailHelp" value={userdata.Email_Id} onChange={handleInputChange} />
+                            </div>
 
-                        <div className="mb-3">
-                            <input type="email" className="form-control" placeholder="Enter email" name='Email_Id' id="exampleInputEmail1" aria-describedby="emailHelp" value={userdata.Email_Id} onChange={handleInputChange} />
-                        </div>
+                            <div className="mb-3">
+                                <input type="password" className="form-control" placeholder="Enter Password" id="exampleInputPassword1" name='Password' value={userdata.Password} onChange={handleInputChange} />
+                            </div>
 
-                        <div className="mb-3">
-                            <input type="password" className="form-control" placeholder="Enter Password" id="exampleInputPassword1" name='Password' value={userdata.Password} onChange={handleInputChange} />
-                        </div>
+                            <div className="mb-3">
+                                <input type="number" className="form-control" placeholder="Enter Mobile Number" id="exampleInputsMob_No1" name='Mob_No' value={userdata.Mob_No} onChange={handleInputChange} />
+                            </div>
 
-                        <div className="mb-3">
-                            <input type="number" className="form-control" placeholder="Enter Mobile Number" id="exampleInputsMob_No1" name='Mob_No' value={userdata.Mob_No} onChange={handleInputChange} />
-                        </div>
-
-                        <div className="text-center mb-3">
-                            <button type="submit" className="btn btn-primary" onClick={handleFormUpdate}>Save Profile</button>
-                        </div>
-
+                            <div className="text-center mb-3">
+                                <button type="submit" className="btn btn-primary">Save Profile</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
+
+            <div className=" text-center mb-3">
+                <button className="btn btn-outline-primary mt-3 me-3" onClick={handleBack}>Back</button>
             </div>
         </div>
     );

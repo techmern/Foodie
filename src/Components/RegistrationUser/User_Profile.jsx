@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 function User_Profile() {
 
 
@@ -23,15 +26,19 @@ function User_Profile() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line no-undef
     fetchUserDataFromLocalStorage();
-
+    AOS.init();
   }, []);
 
+  const handleBack = () => {
+    window.location.href = '/welcomeuser';
+  };
 
 
   return (
     <div className='container-fluid'>
-      <div className='row justify-content-center mt-4'>
+      <div className='row justify-content-center mt-4' data-aos="fade-up" data-aos-duration="1000">
         <div className='col-md-4 col-sm-6 col-12'>
           <div className='p-4' style={{ background: '#f5f5f5', boxShadow: '0 0 10px rgba(0,0,0,0.1)', borderRadius: '5px' }}>
             <h2 className="text-center mb-4">Your Profile</h2>
@@ -66,8 +73,14 @@ function User_Profile() {
               <td><a type="submit" className="btn btn-primary " href="/updateuser">Edit</a> </td>
 
             </div>
+
           </div>
+
         </div>
+
+      </div>
+      <div className=" text-center mb-3" data-aos="fade-up" data-aos-duration="1000">
+        <button className="btn btn-outline-primary mt-3 me-3" onClick={handleBack}>Back</button>
       </div>
     </div>
   );

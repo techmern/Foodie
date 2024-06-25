@@ -12,6 +12,7 @@ function Login_User() {
     const [userlogin, setUserlogin] = useState({
         'Email_Id': '',
         'Password': '',
+        
     })
 
     const handleInputChange = (e) => {
@@ -51,11 +52,13 @@ function Login_User() {
 
             } else if (data.loginsts === 1) {
                 alert('Password is Incorrect');
-                
+
             } else if (data.loginsts === 2) {
                 const userData = data.userData;
+
                 console.log('Stored user data:', userData);
                 localStorage.setItem('User', JSON.stringify(userData));
+                localStorage.setItem('Token', data.Token);
                 navigate('/welcomeuser');
                 alert('Login successful!');
             }
@@ -106,7 +109,7 @@ function Login_User() {
 
 
                             <div className="text-left mb-3">
-                                <a className='ms-2' href="/sendemail">Forget Password</a>
+                                <a className='ms-2' href="/forgotPassOTPUser">Forget Password</a>
                             </div>
 
                             <div className="mb-3">

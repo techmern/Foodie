@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
+import Navbar from '../CommonLayouts/Navbar/Navbar'
 
 export default function Restaurant_Edit_Food_item_Image() {
 
@@ -28,6 +29,7 @@ export default function Restaurant_Edit_Food_item_Image() {
             textAlign: "center",
             letterSpacing: "9px",
             wordSpacing: "4px",
+            marginTop:'60px',
             margin: "auto",
             fontFamily: "'Lobster', cursive",
             borderRadius: '10px',
@@ -36,8 +38,8 @@ export default function Restaurant_Edit_Food_item_Image() {
 
         backButton: {
             position: 'absolute',
-            left: '20px',
-            top: '20px',
+            marginLeft: '20px',
+            marginTop: '10px',
             padding: '10px 20px',
             backgroundColor: 'red',
             color: '#fff',
@@ -157,6 +159,7 @@ export default function Restaurant_Edit_Food_item_Image() {
 
 
     const handleImgChange = (e) => {
+     
         const file = e.target.files[0];
         if (file) {
 
@@ -227,6 +230,7 @@ export default function Restaurant_Edit_Food_item_Image() {
 
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
         if (formData.food_itemImg) {
             const formDataToUpload = new FormData();
             formDataToUpload.append('food_itemImg', formData.food_itemImg);
@@ -256,11 +260,13 @@ export default function Restaurant_Edit_Food_item_Image() {
 
 
         <div>
+
+            <Navbar/>
+            <button style={style.backButton} onClick={handleBack}>Back</button>
             <header style={style.header}>
                 <h1>Update Food Item Details</h1>
             </header>
 
-            <button style={style.backButton} onClick={handleBack}>Back</button>
 
             <div style={style.mainContainer}>
                 <table style={style.formContainer}>
