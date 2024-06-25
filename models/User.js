@@ -20,14 +20,10 @@ const userSchema = new mongoose.Schema({
     User_profile:{
         type:String,
     },
-
     token:{
         type:String,
 
     },
-
-    
-
 })
 
-module.exports = mongoose.model('user',userSchema)
+module.exports = mongoose.model('user',userSchema);

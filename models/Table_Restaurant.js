@@ -16,7 +16,7 @@ const tableSchema = new mongoose.Schema({
     },
     table_availability:{
         type:String, 
-        enum:['Available','Not Available'], 
+        enum:['Available','Not Available','Booked'], 
         default:'Available'
     }
     

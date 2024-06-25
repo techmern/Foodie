@@ -1,30 +1,33 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+const ForgotOTPRestaurantModel = require('../Models/Forgot_Password_Restaurant');
+const RestaurantModel = require('../Models/Restaurant');
 
-const ForgotOTPRestaurantModel = require('../Models/Forgot_Password_Restaurant')
-
-
-// http://localhost:5000/forgototprestaurant/forgotpassotp
-router.post('/forgotpassotp',async(req,res)=>{
+router.post('/forgotpassotp', async (req, res) => {
     try {
+        // Check if the email exists in the RestaurantModel
+        const { emailid, otp } = req.body;
+        const existingRestaurant = await RestaurantModel.findOne({ emailid });
+        if (!existingRestaurant) {
+            return res.status(400).json({ message: "Invalid email ID" });
+        }
+
         const newForgot = new ForgotOTPRestaurantModel({
-            emailid:req.body.emailid,   
-            otp:req.body.otp,     
-            
-        })
-        const forgotpassotp = await newForgot.save()
+            emailid,
+            otp,
+        });
+        const savedForgotOTP = await newForgot.save();
         
-        if (forgotpassotp) {
-            const otp = `${req.body.otp}`;
-            console.log(otp);
-            res.status(200).json({"msg":"Added","sts":0,forgotpassotp})
+        if (savedForgotOTP) {
+            console.log("OTP saved:", otp);
+            return res.status(200).json({ message: "OTP added successfully", status: 0, savedForgotOTP });
         } else {
-            res.status(400).json({"msg":"Not Added","sts":1})
+            return res.status(500).json({ message: "Failed to save OTP", status: 1 });
         }
     } catch (error) {
-        console.error(error)   
-   }
+        console.error("Error:", error);
+        return res.status(500).json({ message: "Internal server error", status: 2 });
+    }
+});
 
-})
-
-module.exports = router
+module.exports = router;

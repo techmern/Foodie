@@ -96,4 +96,41 @@ router.put('/updateTable/:tableId',async(req,res)=>{
     }
 })
 
+// http://localhost:5000/restauranttable/gettabledata/
+router.get('/gettabledata/:tid', async (req, res) => {
+    const tid = req.params.tid;
+    try {
+        const table = await TableModel.find({ restaurant_id: tid });
+        
+        if (!table || table.length === 0) {
+            return res.status(404).json({ error: "Menu items not found for the specified restaurant" });
+        }
+
+        res.json(table);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+// http://localhost:5000/restauranttable/gettablenumber
+router.get('/gettablenumber/:tid', async (req, res) => {
+    const tid = req.params.tid;
+    try {
+        const table = await TableModel.findById(tid);
+        
+        if (!table) {
+            return res.status(404).json({ error: "Table not found for the specified ID" });
+        }
+
+        res.json({ tableNumber: table.number }); 
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
 module.exports = router

@@ -14,7 +14,7 @@ const restaurantSchema = new mongoose.Schema({
         required:true,
     },
     mobno:{
-        type:Number,
+        type:String,
         required:true,
     },
     address:{

@@ -1,9 +1,7 @@
 const express = require('express');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-
 const jwt = require('jsonwebtoken');
-
 
 
 const multer = require('multer');
@@ -12,8 +10,8 @@ const path = require('path');
 const router = express.Router();
 
 const fs = require('fs');
-
 const Token = require('../models/Token');
+const Forgot_Password_User = require('../models/Forgot_Password_User');
 
 const SECRET_key = "qwerty"
 
@@ -43,7 +41,6 @@ router.post('/userregister', async (req, res) => {
     }
 
 })
-
 
 //  http://localhost:5000/user/checktoken
 router.post('/checktoken', async (req, res) => {
@@ -79,68 +76,52 @@ router.get('/viewuser', async (req, res) => {
 })
 
 
-
-
-// set up storage engine  for single file
-const store = multer.diskStorage({
-    destination: './userprofile/',
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'userprofile/');
+    },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname))
-
+        cb(null, Date.now() + path.extname(file.originalname));
     }
-})
+});
 
-// initiaze multer
-const upload = multer({
-    storage: store,
-    limits: { filesize: 5000000 }
-})
+const upload = multer({ storage: storage });
+
+
 
 router.put('/uploaduserprofile/:upid', upload.single('User_profile'), (req, res) => {
     res.json({ 'msg': 'File is Uploaded' });
 });
 
-//  UPDATE-- http://localhost:5000/user/updateuser/65cc4ccbb8c7f30a9381061c
+
+//  UPDATE-- http://localhost:5000/user/updateuser
 router.put('/updateuser', upload.single('User_profile'), async (req, res) => {
-    const { Email_Id, Password, Username, Mob_No } = req.body;
-
     try {
-        let updateData = {
-            Username: Username,
-            Email_Id: Email_Id,
-            Mob_No: Mob_No,
-        };
+        const { Email_Id, Password, Username, Mob_No } = req.body;
+        const User_profile = req.file ? req.file.path : null;
+        // Update user logic here...
+        
 
-        if (req.file) {
-            updateData.User_profile = req.file.path;
+        const user = await User.findOne({ Email_Id });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        const userLoginData = await User.findOneAndUpdate({ Email_Id, Password });
-
-        if (!userLoginData) {
-            return res.status(404).json({ 'msg': 'User not found' });
+        user.Username = Username;
+        user.Password = await bcrypt.hash(Password, 12);
+        user.Mob_No = Mob_No;
+        if (User_profile) {
+            user.User_profile = User_profile;
         }
 
-        // Remove old user profile image
-        if (req.file && userLoginData.User_profile) {
-            fs.unlinkSync(userLoginData.User_profile); // Remove the old image file
-        }
+        await user.save();
 
-        // Update user data
-        await User.findByIdAndUpdate(userLoginData._id, updateData);
-
-        if (Password) {
-            const hashedPassword = await bcrypt.hash(Password, 12);
-            await User.updateOne({ Email_Id }, { Password: hashedPassword });
-        }
-
-
-        res.status(200).json({ 'msg': 'User has been updated successfully' });
+        res.json({ message: 'Profile updated successfully', User_profile });
     } catch (error) {
-        res.status(500).json({ 'Error': error.message });
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
-
 
 
 
@@ -155,21 +136,29 @@ router.post('/userlogin', async (req, res) => {
             return res.json({ 'msg': 'Email not found', 'loginsts': 0 });
         } else {
             if (await bcrypt.compare(Password, login.Password)) {
+                const token = jwt.sign({ userId: login._id }, SECRET_key, { expiresIn: '1h' }); // Generate token
+                const expiresAt = new Date(Date.now() + (60 * 60 * 1000));
+
+                const tokensave = new Token({
+                    userId: login._id,
+                    token,
+                    expiresAt,
+                });
+
+                await tokensave.save();
+
                 // Send user data along with the response
                 const userData = {
-                    _id:login._id,
+                    _id: login._id,
                     Username: login.Username,
                     Email_Id: login.Email_Id,
-                    Password: login.Password,
                     Mob_No: login.Mob_No,
+                    User_profile: login.User_profile,
                 };
 
-                
-
-                return res.json({ 'msg': 'Login Successfully', 'loginsts': 2, userData });
+                return res.json({ 'msg': 'Login Successfully', 'loginsts': 2, userData, token });
             } else {
                 return res.json({ 'msg': 'Password is Incorrect', 'loginsts': 1 });
-
             }
         }
     } catch (error) {
@@ -177,28 +166,31 @@ router.post('/userlogin', async (req, res) => {
         return res.status(500).json({ 'msg': 'Server Error' });
     }
 });
-    
+
 
 // http://localhost:5000/user/userlogout
 
 router.post('/userlogout', async (req, res) => {
-    const uid = req.params.uid
+    const token = req.body.token
     try {
-        const logout = await User.findByIdAndDelete(uid)
+        const logout = await Token.findOneAndDelete({ token })
         if (!logout) {
             return res.json({ 'msg': 'Logout Succuessfully', 'logoutsts': 0 })
         } else {
             return res.json({ 'msg': 'Failed to login', 'logoutsts': 1 })
+
         }
     } catch (error) {
         res.status(500).json({ 'Error': error })
+
+
     }
 })
 
 // VIEW SINGLE USER   http://localhost:5000/user/singleuser
-router.get('/singleuser/:id', async (req, res) => {
+router.get('/singleuser/:userId', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -208,5 +200,27 @@ router.get('/singleuser/:id', async (req, res) => {
     }
 });
 
+// http://localhost:5000/user/viewuser
+router.get('/viewuser', async (req, res) => {
+    try {
+        const userId = req.query.userId;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        const userdetail = await User.findone({ userId: userId });
+        console.log('User details fetched:', userdetail);
+
+        if (!userdetail || userdetail.length === 0) {
+            return res.status(404).json({ error: 'No user details found for the given user ID' });
+        }
+
+        res.json(userdetail);
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 module.exports = router

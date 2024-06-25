@@ -68,6 +68,20 @@ router.get('/viewMenu', async (req, res) => {
     }
 })
 
+//http://localhost:5000/restaurantmenu/viewMenuUser/1546476845
+router.get('/viewMenuUser/:restaurant_id', async (req, res) => {
+    const restaurant_id = req.params.restaurant_id;
+    try {
+        const restaurantMenus = await MenuModel.find({ restaurant_id });
+        if (!restaurantMenus) {
+            return res.status(404).json({ message: 'No menus found for this restaurant.' });
+        }
+        res.json(restaurantMenus);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 router.delete('/deleteItem/:itemid',async(req,res)=>{
     const itemid = req.params.itemid
@@ -152,6 +166,22 @@ router.post('/updatefoodimg/:id', uploadsingle.single('food_itemImg'), async (re
 });
 
 
+// http://localhost:5000/restaurantmenu/getMenuitem
+router.get('/getMenuitem/:rid', async (req, res) => {
+    const rid = req.params.rid;
+    try {
+        const menuItems = await MenuModel.find({ restaurant_id: rid });
+        
+        if (!menuItems || menuItems.length === 0) {
+            return res.status(404).json({ error: "Menu items not found for the specified restaurant" });
+        }
+
+        res.json(menuItems);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 
 module.exports = router

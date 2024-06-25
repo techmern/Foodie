@@ -37,6 +37,44 @@ router.post('/addRestaurant',async(req,res)=>{
 
 })
 
+// view http://localhost:5000/restaurant/viewrestaurant
+
+router.get('/viewrestaurant', async (req, res) => {
+    try {
+        const { city, search } = req.query;
+        let query = {};
+
+        if (city) {
+            query.city = city;
+        }
+
+        if (search) {
+            query.restaurantname = { $regex: search, $options: 'i' }; // Case insensitive search
+        }
+
+        const restaurants = await RestaurantModel.find(query);
+        res.json(restaurants);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
+
+
+// http://localhost:5000/restaurant/singlerestaurant
+router.get('/singlerestaurant/:rid', async (req, res) => {
+    const rid = req.params.rid
+    try {
+        const restaurant = await RestaurantModel.findById(rid)
+        res.json(restaurant)
+    } catch (error) {
+        res.status(500).json({ 'Error': error })
+    }
+}) 
+
+
 // http://localhost:5000/restaurant/login
 router.post('/login', async (req, res) => {
     const { emailid, password } = req.body;
@@ -192,5 +230,17 @@ router.post('/updatepasswordotp', async (req, res) => {
         console.error(error)
     }
 });
+
+// http://localhost:5000/restaurant/countRestaurant
+router.get('/countRestaurant', async (req, res) => {
+    try {
+        const restaurantCount = await RestaurantModel.countDocuments();
+        res.json({ count: restaurantCount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 
 module.exports = router
