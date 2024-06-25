@@ -29,7 +29,7 @@ function Restaurant_Cart() {
     const fetchAddresses = async () => {
       try {
         const userIdObject = JSON.parse(localStorage.getItem('User'));
-        const userId = userIdObject.userId;
+        const userId = userIdObject._id;
         console.log('Fetching addresses for user ID:', userId);
         const response = await axios.get('http://localhost:5000/useraddress/viewaddress', { params: { userId } });
         setAddresses(response.data);
